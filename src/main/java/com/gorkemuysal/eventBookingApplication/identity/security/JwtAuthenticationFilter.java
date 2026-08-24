@@ -25,14 +25,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 	private static final String PREFIX = "Bearer ";
 	
 	private final JwtService jwtService;
-	private final UserPrincipal principal;
 	
 	/**
 	 * Constructs a new {@code JwtAuthenticationFilter} with required fields
 	 * */
-	public JwtAuthenticationFilter(JwtService jwtService, UserPrincipal principal) {
+	public JwtAuthenticationFilter(JwtService jwtService) {
 		this.jwtService = jwtService;
-		this.principal = principal;
 	}
 	
 	
