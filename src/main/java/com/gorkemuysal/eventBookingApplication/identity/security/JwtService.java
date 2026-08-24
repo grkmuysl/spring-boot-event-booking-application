@@ -114,13 +114,12 @@ public class JwtService {
 	 * checks the token belongs to the given user principal and the token is not expired
 	 * 
 	 * */
-	public boolean isTokenValid(UserPrincipal principal, String token) {
-		try {
-			final String email = extractEmail(token);
-			return email.equals(principal.getUsername()) && !isTokenExpired(token);
-		} catch (JwtException | IllegalArgumentException e) {
-			return false;
-		}
+	public boolean isTokenValid(String token) {
+	    try {
+	        return !isTokenExpired(token);
+	    } catch (JwtException e) {
+	        return false;
+	    }
 	}
-
+	
 }
