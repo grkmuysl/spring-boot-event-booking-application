@@ -1,6 +1,7 @@
 package com.gorkemuysal.eventBookingApplication.identity;
 
 import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
@@ -13,6 +14,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+@Entity
 @Table(name = "users")
 @Getter
 @Setter
@@ -31,13 +33,10 @@ public class User {
 	private String passwordHash;
 
 	@Column(name = "full_name", nullable = false)
-	private String fullName;
+	private String fullName;	
 
 	@Enumerated(EnumType.STRING)
 	@Column(nullable = false)
-	private Roles roles = Roles.ROLES_USER;
-
-	@Column(name = "enabled", nullable = false)
-	private boolean enabled;
+	private Roles role = Roles.USER;
 
 }

@@ -19,6 +19,31 @@
 *.tar.gz
 *.rar
 
-# virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
+# virtual machine crash logs
 hs_err_pid*
 replay_pid*
+
+
+# Maven build output
+target/
+
+# Ortam değişkenleri ve yerel sırlar
+.env
+.env.*
+*-local.yml
+*-local.yaml
+
+# IDE
+.idea/
+*.iml
+.vscode/
+.settings/
+.classpath
+.project
+
+# OS
+.DS_Store
+Thumbs.db
+
+HELP.md
+.factorypath
