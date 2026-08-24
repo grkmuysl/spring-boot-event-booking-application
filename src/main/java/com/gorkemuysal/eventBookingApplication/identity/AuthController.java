@@ -54,7 +54,7 @@ public class AuthController {
 		User user = userRepository.findByEmail(request.email())
 						.orElseThrow();
 		
-		if(!passwordEncoder.matches(user.getPasswordHash() , request.password())) {
+		if(!passwordEncoder.matches(request.password(), user.getPasswordHash())) {
 			throw new Exception("passwords not matchs");
 		}
 		
