@@ -28,12 +28,13 @@ public class GlobalExceptionHandler {
 	private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
 	/*
-	 * Handles cases where a request resource does not exist.
-	 * Logged at WARN level because this is an excepted client error, not a server bug.
+	 * Handles cases where a request resource does not exist. Logged at WARN level
+	 * because this is an excepted client error, not a server bug.
 	 * 
-	 * @param ex the thrown exception containing the error message 
+	 * @param ex the thrown exception containing the error message
+	 * 
 	 * @return 404 NOT_FOUND problem detail response
-	 * */
+	 */
 	@ExceptionHandler(ResourceNotFoundException.class)
 	public ProblemDetail handleNotFound(ResourceNotFoundException ex) {
 
@@ -51,7 +52,7 @@ public class GlobalExceptionHandler {
 	 * 
 	 * @param ex the thrown exception containing the error message
 	 * @return 400 BAD_REQUEST problem detail response
-	 * */
+	 */
 	@ExceptionHandler(MethodArgumentNotValidException.class)
 	public ProblemDetail handleNotValidArgument(MethodArgumentNotValidException ex) {
 
@@ -68,15 +69,54 @@ public class GlobalExceptionHandler {
 		problem.setProperty("timestamp", Instant.now());
 		return problem;
 	}
-
+	
 	/**
-	 * handles any exception not caught by a more specific handler above
-	 * Logged at ERROR level with the full stack trace since this is a 
-	 * unexcepted server-side failure
+	 * Handles register failures when an email already exists 
+	 * 
+	 * @param ex the email already exists exception contains error message
+	 * @return 409 CONFLICT problem detail response
+	 * */
+
+	@ExceptionHandler(EmailAlreadyExistsException.class)
+	public ProblemDetail handleEmailExists(EmailAlreadyExistsException ex) {
+
+		log.warn("Registration conflict: {}", ex.getMessage());
+
+		ProblemDetail problem = ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT, ex.getMessage());
+
+		problem.setTitle("Email already registered");
+		problem.setProperty("timestamp", Instant.now());
+		return problem;
+
+	}
+	
+	/**
+	 * Handles authentication failures. When an email and password does not matches with database
+	 * 
+	 * @param ex the invalid creaditials exception contains error message
+	 * @return 401 UNAUTHORIZED problem detail response
+	 * 
+	 * */
+	@ExceptionHandler(InvalidCredentialsException.class)
+	public ProblemDetail handleInvalidCredentials(InvalidCredentialsException ex) {
+
+		  log.warn("Authentication failed: {}", ex.getMessage());
+		  
+		  ProblemDetail problem = ProblemDetail.forStatusAndDetail(HttpStatus.UNAUTHORIZED, ex.getMessage());
+		  problem.setTitle("Invalid credentials");
+		    problem.setProperty("timestamp", Instant.now());
+		    return problem;
+
+	}
+	
+	/**
+	 * handles any exception not caught by a more specific handler above Logged at
+	 * ERROR level with the full stack trace since this is a unexcepted server-side
+	 * failure
 	 * 
 	 * @param ex the unhandled exception
 	 * @return a generic 500 INTERNAL_SERVER_ERROR
-	 * */
+	 */
 	@ExceptionHandler(Exception.class)
 	public ProblemDetail generalException(Exception ex) {
 
