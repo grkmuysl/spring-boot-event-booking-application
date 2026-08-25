@@ -1,9 +1,12 @@
 package com.gorkemuysal.eventBookingApplication.identity;
 
 import java.net.URI;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -14,6 +17,7 @@ import com.gorkemuysal.eventBookingApplication.common.exception.EmailAlreadyExis
 import com.gorkemuysal.eventBookingApplication.common.exception.InvalidCredentialsException;
 import com.gorkemuysal.eventBookingApplication.identity.dto.LoginRequest;
 import com.gorkemuysal.eventBookingApplication.identity.dto.RegisterRequest;
+import com.gorkemuysal.eventBookingApplication.identity.dto.UserResponse;
 import com.gorkemuysal.eventBookingApplication.identity.security.JwtService;
 import com.gorkemuysal.eventBookingApplication.identity.security.UserPrincipal;
 
@@ -54,7 +58,7 @@ public class AuthController {
 
 	@PostMapping("/login")
 	String login(@Valid @RequestBody LoginRequest request) throws Exception {
-		
+
 		// Same exception for "email not found" and "wrong password"
 		// to avoid leaking which emails are registered.
 		User user = userRepository.findByEmail(request.email()).orElseThrow(InvalidCredentialsException::new);
@@ -67,4 +71,18 @@ public class AuthController {
 
 		return accessToken;
 	}
+
+	/**
+	 * a get api call to show all users as a DTO object list.
+	 * 
+	 * @return returns List of User Dto objects
+	 * */
+	@GetMapping("/users")
+	List<UserResponse> getAllUsers() {
+
+		return userRepository.findAll().stream()
+				.map(user -> new UserResponse(user.getEmail(), user.getFullName(), user.getRole())).toList();
+
+	}
+
 }
