@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import com.gorkemuysal.eventBookingApplication.common.exception.EmailAlreadyExistsException;
+import com.gorkemuysal.eventBookingApplication.common.exception.InvalidCredentialsException;
 import com.gorkemuysal.eventBookingApplication.identity.dto.LoginRequest;
 import com.gorkemuysal.eventBookingApplication.identity.dto.RegisterRequest;
 import com.gorkemuysal.eventBookingApplication.identity.security.JwtService;
@@ -24,44 +26,45 @@ public class AuthController {
 	private final PasswordEncoder passwordEncoder;
 	private final UserRepository userRepository;
 	private final JwtService jwtService;
-	
+
 	public AuthController(UserRepository userRepository, PasswordEncoder passwordEncoder, JwtService jwtService) {
 		this.userRepository = userRepository;
 		this.passwordEncoder = passwordEncoder;
 		this.jwtService = jwtService;
 	}
-	
+
 	@PostMapping("/register")
-	ResponseEntity<Void> register(@Valid @RequestBody RegisterRequest request, UriComponentsBuilder uriBuilder) throws Exception{
-		
-		if(!userRepository.existsByEmail(request.email())) {
-			throw new Exception("user not found.");
+	ResponseEntity<Void> register(@Valid @RequestBody RegisterRequest request, UriComponentsBuilder uriBuilder)
+			throws Exception {
+
+		if (userRepository.existsByEmail(request.email())) {
+			throw new EmailAlreadyExistsException(request.email());
 		}
-		
+
 		User user = new User();
 		user.setEmail(request.email());
 		user.setFullName(request.fullname());
-		user.setPasswordHash(request.password());
-		
+		user.setPasswordHash(passwordEncoder.encode(request.password()));
+
 		userRepository.save(user);
-		
+
 		URI location = uriBuilder.path("/api/v1/users/{id}").buildAndExpand(user.getId()).toUri();
 		return ResponseEntity.created(location).build();
 	}
-	
+
 	@PostMapping("/login")
 	String login(@Valid @RequestBody LoginRequest request) throws Exception {
-		User user = userRepository.findByEmail(request.email())
-						.orElseThrow();
 		
-		if(!passwordEncoder.matches(request.password(), user.getPasswordHash())) {
-			throw new Exception("passwords not matchs");
+		// Same exception for "email not found" and "wrong password"
+		// to avoid leaking which emails are registered.
+		User user = userRepository.findByEmail(request.email()).orElseThrow(InvalidCredentialsException::new);
+
+		if (!passwordEncoder.matches(request.password(), user.getPasswordHash())) {
+			throw new InvalidCredentialsException();
 		}
-		
-		
-		
+
 		String accessToken = jwtService.generateAccessToken(new UserPrincipal(user));
-		
+
 		return accessToken;
 	}
 }
