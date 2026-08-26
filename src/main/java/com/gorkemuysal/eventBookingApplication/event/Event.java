@@ -74,4 +74,5 @@ public class Event {
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "created_by", nullable = false)
 	private User createdBy;
+
 }

@@ -10,6 +10,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 
+// Record file to prevent return private fileds
 public record EventDto(
 		@NotBlank String title,
 		@NotBlank String description,
