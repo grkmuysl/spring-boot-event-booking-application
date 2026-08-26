@@ -29,6 +29,7 @@
 	</scm>
 	<properties>
 		<java.version>25</java.version>
+		<org.mapstruct.version>1.6.3</org.mapstruct.version>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -133,10 +134,17 @@
 		</dependency>
 
 		<dependency>
-    <groupId>me.paulschwarz</groupId>
-    <artifactId>springboot4-dotenv</artifactId>
-    <version>5.1.0</version>
-</dependency>
+			<groupId>org.mapstruct</groupId>
+			<artifactId>mapstruct</artifactId>
+			<version>${org.mapstruct.version}</version>
+		</dependency>
+
+
+		<dependency>
+			<groupId>me.paulschwarz</groupId>
+			<artifactId>springboot4-dotenv</artifactId>
+			<version>5.1.0</version>
+		</dependency>
 
 	</dependencies>
 

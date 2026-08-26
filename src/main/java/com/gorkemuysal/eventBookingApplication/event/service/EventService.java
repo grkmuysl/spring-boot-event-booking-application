@@ -10,9 +10,10 @@ import com.gorkemuysal.eventBookingApplication.event.dto.EventRequestDto;
 import jakarta.validation.Valid;
 
 public interface EventService {
-	EventDto create(@Valid @RequestBody EventRequestDto request);
+	EventDto create(@Valid @RequestBody EventDto request, Long creatorId);
 
 	EventDto getById(Long id);
+	
+	EventDto update(@Valid @RequestBody EventDto request, Long id);
 
-	EventDto toDto(Event event);
 }
