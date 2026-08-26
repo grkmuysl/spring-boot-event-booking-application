@@ -109,6 +109,27 @@ public class GlobalExceptionHandler {
 
 	}
 	
+	
+	/**
+	 * Handles find event with id. When event not found with entered Id, this exception will be thrown
+	 * 
+	 * @param ex the event not found expception
+	 * @return 404 NOT_FOUND problem detail response
+	 * 
+	 * */
+	@ExceptionHandler(EventNotFoundException.class)
+	public ProblemDetail handleEventNotFound(EventNotFoundException ex) {
+		
+		log.warn("Event not found: {}" , ex.getMessage());
+		
+		ProblemDetail problem = ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, ex.getMessage());
+		problem.setTitle("Event not found");
+		problem.setProperty("timestamp", Instant.now());
+		return problem;
+		
+		
+	}
+	
 	/**
 	 * handles any exception not caught by a more specific handler above Logged at
 	 * ERROR level with the full stack trace since this is a unexcepted server-side
