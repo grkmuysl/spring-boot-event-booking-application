@@ -69,13 +69,13 @@ public class GlobalExceptionHandler {
 		problem.setProperty("timestamp", Instant.now());
 		return problem;
 	}
-	
+
 	/**
-	 * Handles register failures when an email already exists 
+	 * Handles register failures when an email already exists
 	 * 
 	 * @param ex the email already exists exception contains error message
 	 * @return 409 CONFLICT problem detail response
-	 * */
+	 */
 
 	@ExceptionHandler(EmailAlreadyExistsException.class)
 	public ProblemDetail handleEmailExists(EmailAlreadyExistsException ex) {
@@ -89,26 +89,101 @@ public class GlobalExceptionHandler {
 		return problem;
 
 	}
-	
+
 	/**
-	 * Handles authentication failures. When an email and password does not matches with database
+	 * Handles authentication failures. When an email and password does not matches
+	 * with database
 	 * 
 	 * @param ex the invalid creaditials exception contains error message
 	 * @return 401 UNAUTHORIZED problem detail response
 	 * 
-	 * */
+	 */
 	@ExceptionHandler(InvalidCredentialsException.class)
 	public ProblemDetail handleInvalidCredentials(InvalidCredentialsException ex) {
 
-		  log.warn("Authentication failed: {}", ex.getMessage());
-		  
-		  ProblemDetail problem = ProblemDetail.forStatusAndDetail(HttpStatus.UNAUTHORIZED, ex.getMessage());
-		  problem.setTitle("Invalid credentials");
-		    problem.setProperty("timestamp", Instant.now());
-		    return problem;
+		log.warn("Authentication failed: {}", ex.getMessage());
+
+		ProblemDetail problem = ProblemDetail.forStatusAndDetail(HttpStatus.UNAUTHORIZED, ex.getMessage());
+		problem.setTitle("Invalid credentials");
+		problem.setProperty("timestamp", Instant.now());
+		return problem;
 
 	}
+
+	/**
+	 * Handles find event with id. When event not found with entered Id, this
+	 * exception will be thrown
+	 * 
+	 * @param ex the event not found expception
+	 * @return 404 NOT_FOUND problem detail response
+	 * 
+	 */
+	@ExceptionHandler(EventNotFoundException.class)
+	public ProblemDetail handleEventNotFound(EventNotFoundException ex) {
+
+		log.warn("Event not found: {}", ex.getMessage());
+
+		ProblemDetail problem = ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, ex.getMessage());
+		problem.setTitle("Event not found");
+		problem.setProperty("timestamp", Instant.now());
+		return problem;
+
+	}
+
+	/**
+	 * It handles when user not found with entered id/email
+	 * 
+	 * @param ex UserNotFoundWithEmailException
+	 * @return 404 NOT_FOUND problem detail response
+	 */
+	@ExceptionHandler(UserNotFoundWithEmailException.class)
+	public ProblemDetail handleUserNotFound(UserNotFoundWithEmailException ex) {
+
+		log.warn("User not found: {}", ex.getMessage());
+
+		ProblemDetail problem = ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, ex.getMessage());
+		problem.setTitle("User not found");
+		problem.setProperty("timestamp", Instant.now());
+		return problem;
+	}
+
+	/**
+	 * It handles "Access Denied" scenarios where the user does not have permission
+	 * to perform an operation.
+	 * 
+	 * @param ex Access Denied expception
+	 * @return 403 FORBIDDEN problem detail response
+	 */
+	@ExceptionHandler(AccessDeniedException.class)
+	public ProblemDetail handleAccessDenied(AccessDeniedException ex) {
+
+		log.warn("You don't have permission: {}", ex.getMessage());
+
+		ProblemDetail problem = ProblemDetail.forStatusAndDetail(HttpStatus.FORBIDDEN, ex.getMessage());
+		problem.setTitle("Access Denied");
+		problem.setProperty("timestamp", Instant.now());
+		return problem;
+	}
 	
+
+	/**
+	 * Handles Invalid Events State exceptions
+	 * For example an event cannot canceled when it already canceled.
+	 * 
+	 * @param ex InvalidEventStateException
+	 * @return 409 CONFLICT problem detail response
+	 * */
+	@ExceptionHandler(InvalidEventStateException.class)
+	public ProblemDetail handleInvalidEventsState(InvalidEventStateException ex) {
+		
+		log.warn("Invalid Events State: {}" , ex.getMessage());
+		
+		ProblemDetail problem = ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT, ex.getMessage());
+		problem.setTitle("Invalid Events State");
+		problem.setProperty("timestamp", Instant.now());
+		return problem;
+	}
+
 	/**
 	 * handles any exception not caught by a more specific handler above Logged at
 	 * ERROR level with the full stack trace since this is a unexcepted server-side
