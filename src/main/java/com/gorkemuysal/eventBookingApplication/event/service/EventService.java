@@ -3,17 +3,16 @@ package com.gorkemuysal.eventBookingApplication.event.service;
 
 import org.springframework.web.bind.annotation.RequestBody;
 
-import com.gorkemuysal.eventBookingApplication.event.Event;
-import com.gorkemuysal.eventBookingApplication.event.dto.EventDto;
-import com.gorkemuysal.eventBookingApplication.event.dto.EventRequestDto;
+import com.gorkemuysal.eventBookingApplication.event.dto.EventRequest;
+import com.gorkemuysal.eventBookingApplication.event.dto.EventResponse;
 
 import jakarta.validation.Valid;
 
 public interface EventService {
-	EventDto create(@Valid @RequestBody EventDto request, Long creatorId);
+	EventResponse create(@Valid @RequestBody EventRequest request, Long creatorId);
 
-	EventDto getById(Long id);
+	EventResponse getById(Long id);
 	
-	EventDto update(@Valid @RequestBody EventDto request, Long id);
+	EventResponse update(@Valid @RequestBody EventRequest request, Long id);
 
 }

@@ -1,7 +1,5 @@
 package com.gorkemuysal.eventBookingApplication.event.service.impl;
 
-import java.util.Optional;
-
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -10,7 +8,8 @@ import com.gorkemuysal.eventBookingApplication.common.exception.EventNotFoundExc
 import com.gorkemuysal.eventBookingApplication.event.Event;
 import com.gorkemuysal.eventBookingApplication.event.EventRepository;
 import com.gorkemuysal.eventBookingApplication.event.EventStatus;
-import com.gorkemuysal.eventBookingApplication.event.dto.EventDto;
+import com.gorkemuysal.eventBookingApplication.event.dto.EventRequest;
+import com.gorkemuysal.eventBookingApplication.event.dto.EventResponse;
 import com.gorkemuysal.eventBookingApplication.event.mapper.EventMapper;
 import com.gorkemuysal.eventBookingApplication.event.service.EventService;
 import com.gorkemuysal.eventBookingApplication.identity.User;
@@ -41,7 +40,7 @@ public class EventServiceImpl implements EventService {
 	 * @return A Dto object as a EventDto instance
 	 * */
 	@Override
-	public EventDto create(@Valid @RequestBody EventDto request, Long creatorId) {
+	public EventResponse create(@Valid @RequestBody EventRequest request, Long creatorId) {
 		
 		User ref = userRepository.getReferenceById(creatorId);
 		
@@ -65,7 +64,7 @@ public class EventServiceImpl implements EventService {
 	 * @throws An custom Exception when Event not found with entered id.
 	 * */
 	@Override
-	public EventDto getById(Long id) {
+	public EventResponse getById(Long id) {
 	
 		Event event = eventRepository.findById(id).orElseThrow(() -> new EventNotFoundException(id));
 		
@@ -81,7 +80,7 @@ public class EventServiceImpl implements EventService {
 	 * @throws An custom Exception when Event not found with entered id.
 	 * */
 	@Override
-	public EventDto update(@Valid EventDto request, Long id) {
+	public EventResponse update(@Valid EventRequest request, Long id) {
 
 		Event event = eventRepository.findById(id).orElseThrow(() -> new EventNotFoundException(id));
 		
