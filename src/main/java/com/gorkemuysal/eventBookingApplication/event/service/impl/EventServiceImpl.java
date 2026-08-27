@@ -1,5 +1,8 @@
 package com.gorkemuysal.eventBookingApplication.event.service.impl;
 
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -7,7 +10,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import com.gorkemuysal.eventBookingApplication.common.exception.EventNotFoundException;
 import com.gorkemuysal.eventBookingApplication.event.Event;
 import com.gorkemuysal.eventBookingApplication.event.EventRepository;
-import com.gorkemuysal.eventBookingApplication.event.EventStatus;
 import com.gorkemuysal.eventBookingApplication.event.dto.EventRequest;
 import com.gorkemuysal.eventBookingApplication.event.dto.EventResponse;
 import com.gorkemuysal.eventBookingApplication.event.mapper.EventMapper;
@@ -40,19 +42,20 @@ public class EventServiceImpl implements EventService {
 	 * @return A Dto object as a EventDto instance
 	 * */
 	@Override
-	public EventResponse create(@Valid @RequestBody EventRequest request, Long creatorId) {
+	public EventResponse create(@Valid @RequestBody EventRequest request) {
 		
-		User ref = userRepository.getReferenceById(creatorId);
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		String username = auth.getName();
 		
-		// mapping with eventMapper interface
+		User currentUser = userRepository.findByEmail(username)
+				.orElseThrow(() -> new UsernameNotFoundException(username));
+		
 		Event event = eventMapper.toEntity(request);
-		event.setCreatedBy(ref);
-		event.setCapacity(request.capacity());
-		event.setStatus(EventStatus.DRAFT);
+		event.setCreatedBy(currentUser);
+		event.setStatus(request.status());
 		
-		Event saved = eventRepository.save(event);
 		
-		return eventMapper.toDto(saved);
+		return eventMapper.toResponse(event);
 	}
 
 	
@@ -68,7 +71,7 @@ public class EventServiceImpl implements EventService {
 	
 		Event event = eventRepository.findById(id).orElseThrow(() -> new EventNotFoundException(id));
 		
-		return eventMapper.toDto(event);
+		return eventMapper.toResponse(event);
 	}
 
 	
@@ -87,7 +90,7 @@ public class EventServiceImpl implements EventService {
 		eventMapper.updateEntityFromDto(request, event);
 		Event updated = eventRepository.save(event);
 		
-		return eventMapper.toDto(updated);
+		return eventMapper.toResponse(updated);
 		
 	}
 

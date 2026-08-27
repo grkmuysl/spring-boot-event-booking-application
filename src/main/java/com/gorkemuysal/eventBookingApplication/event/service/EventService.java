@@ -9,7 +9,7 @@ import com.gorkemuysal.eventBookingApplication.event.dto.EventResponse;
 import jakarta.validation.Valid;
 
 public interface EventService {
-	EventResponse create(@Valid @RequestBody EventRequest request, Long creatorId);
+	EventResponse create(@Valid @RequestBody EventRequest request);
 
 	EventResponse getById(Long id);
 	

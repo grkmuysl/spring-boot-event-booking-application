@@ -130,6 +130,17 @@ public class GlobalExceptionHandler {
 		
 	}
 	
+	@ExceptionHandler(UserNotFoundWithEmailException.class)
+	public ProblemDetail handleUserNotFound(UserNotFoundWithEmailException ex) {
+		
+		log.warn("User not found: {}" , ex.getMessage());
+		
+		ProblemDetail problem = ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, ex.getMessage());
+		problem.setTitle("User not found");
+		problem.setProperty("timestamp", Instant.now());
+		return problem;
+	}
+	
 	/**
 	 * handles any exception not caught by a more specific handler above Logged at
 	 * ERROR level with the full stack trace since this is a unexcepted server-side

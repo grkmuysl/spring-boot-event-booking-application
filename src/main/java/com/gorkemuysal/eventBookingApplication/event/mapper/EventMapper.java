@@ -31,7 +31,7 @@ public interface EventMapper {
 	 * @return A EventResponse object
 	 */
 	@Mapping(target = "createdByEmail", source = "createdBy.email")
-	public EventResponse toDto(Event event);
+	public EventResponse toResponse(Event event);
 
 	/**
 	 * Thanks to this method an Entity object can be updated automatically with Dto
