@@ -30,7 +30,7 @@ public interface EventMapper {
 	 * @param An Event entity object which contains required fields
 	 * @return A EventResponse object
 	 */
-	@Mapping(target = "createdByEmail", source = "createdBy.email")
+	@Mapping(target = "createdByUsername", source = "createdBy.email")
 	public EventResponse toResponse(Event event);
 
 	/**
