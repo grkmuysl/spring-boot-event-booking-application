@@ -164,23 +164,60 @@ public class GlobalExceptionHandler {
 		problem.setProperty("timestamp", Instant.now());
 		return problem;
 	}
-	
 
 	/**
-	 * Handles Invalid Events State exceptions
-	 * For example an event cannot canceled when it already canceled.
+	 * Handles Invalid Events State exceptions For example an event cannot canceled
+	 * when it already canceled.
 	 * 
 	 * @param ex InvalidEventStateException
 	 * @return 409 CONFLICT problem detail response
-	 * */
+	 */
 	@ExceptionHandler(InvalidEventStateException.class)
 	public ProblemDetail handleInvalidEventsState(InvalidEventStateException ex) {
-		
-		log.warn("Invalid Events State: {}" , ex.getMessage());
-		
+
+		log.warn("Invalid Events State: {}", ex.getMessage());
+
 		ProblemDetail problem = ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT, ex.getMessage());
 		problem.setTitle("Invalid Events State");
 		problem.setProperty("timestamp", Instant.now());
+		return problem;
+	}
+
+	/**
+	 * Handles not available reservation requests. 
+	 * If an event is locked by another request this exception is thrown.
+	 * 
+	 * @param ex EventNotAvailableException
+	 * @return 409 CONFLICT problem detail response
+	 * */
+	@ExceptionHandler(EventNotAvailableException.class)
+	public ProblemDetail handleEventNotAvailable(EventNotAvailableException ex) {
+
+		log.warn("Event not available: {}", ex.getMessage());
+
+		ProblemDetail problem = ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT, ex.getMessage());
+		problem.setTitle("Event not available");
+		problem.setProperty("timestamp", Instant.now());
+
+		return problem;
+	}
+	
+	/**
+	 * Handles insufficient capacity reservations. 
+	 * If there is no seats much as requested seat count, an exception is thrown.
+	 * 
+	 * @param ex InsufficientCapacityException
+	 * @return 409 CONFLICT problem detail response
+	 * */
+	@ExceptionHandler(InsufficientCapacityException.class)
+	public ProblemDetail handleInsufficientCapacity(InsufficientCapacityException ex) {
+
+		log.warn("Insufficient capacity error: {}", ex.getMessage());
+
+		ProblemDetail problem = ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT, ex.getMessage());
+		problem.setTitle("Insufficient capacity error");
+		problem.setProperty("timestamp", Instant.now());
+
 		return problem;
 	}
 
