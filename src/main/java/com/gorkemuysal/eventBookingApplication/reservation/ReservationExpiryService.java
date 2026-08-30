@@ -20,7 +20,7 @@ public class ReservationExpiryService {
     private final ReservationRepository reservationRepository;
     private final EventRepository eventRepository;
 
-    /**
+    /**	
      * Everything here happens in a single transaction.
      * */
     @Transactional
