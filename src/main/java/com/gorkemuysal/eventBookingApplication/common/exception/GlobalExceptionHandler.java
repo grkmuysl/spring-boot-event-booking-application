@@ -184,12 +184,12 @@ public class GlobalExceptionHandler {
 	}
 
 	/**
-	 * Handles not available reservation requests. 
-	 * If an event is locked by another request this exception is thrown.
+	 * Handles not available reservation requests. If an event is locked by another
+	 * request or if event is already published this exception is thrown.
 	 * 
 	 * @param ex EventNotAvailableException
 	 * @return 409 CONFLICT problem detail response
-	 * */
+	 */
 	@ExceptionHandler(EventNotAvailableException.class)
 	public ProblemDetail handleEventNotAvailable(EventNotAvailableException ex) {
 
@@ -201,14 +201,14 @@ public class GlobalExceptionHandler {
 
 		return problem;
 	}
-	
+
 	/**
-	 * Handles insufficient capacity reservations. 
-	 * If there is no seats much as requested seat count, an exception is thrown.
+	 * Handles insufficient capacity reservations. If there is no seats much as
+	 * requested seat count, an exception is thrown.
 	 * 
 	 * @param ex InsufficientCapacityException
 	 * @return 409 CONFLICT problem detail response
-	 * */
+	 */
 	@ExceptionHandler(InsufficientCapacityException.class)
 	public ProblemDetail handleInsufficientCapacity(InsufficientCapacityException ex) {
 
@@ -218,6 +218,62 @@ public class GlobalExceptionHandler {
 		problem.setTitle("Insufficient capacity error");
 		problem.setProperty("timestamp", Instant.now());
 
+		return problem;
+	}
+
+	/**
+	 * Handles finding reservation with id. When reservation not found with entered
+	 * Id, this exception will be thrown
+	 * 
+	 * @param ex the reservation not found expception
+	 * @return 404 NOT_FOUND problem detail response
+	 * 
+	 */
+	@ExceptionHandler(ReservationNotFoundException.class)
+	public ProblemDetail handleReservationNotFound(ReservationNotFoundException ex) {
+
+		log.warn("Reservation not found: {}", ex.getMessage());
+
+		ProblemDetail problem = ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, ex.getMessage());
+		problem.setTitle("Reservation not found");
+		problem.setProperty("timestamp", Instant.now());
+		return problem;
+
+	}
+
+	/**
+	 * It handles "Access Denied" scenarios where the user does not have permission
+	 * to access reservation to perform an operation.
+	 * 
+	 * @param ex Reservation Access Denied expception
+	 * @return 403 FORBIDDEN problem detail response
+	 */
+	@ExceptionHandler(ReservationAccessDeniedException.class)
+	public ProblemDetail handleAccessDenied(ReservationAccessDeniedException ex) {
+
+		log.warn("You don't have access to reservation: {}", ex.getMessage());
+
+		ProblemDetail problem = ProblemDetail.forStatusAndDetail(HttpStatus.FORBIDDEN, ex.getMessage());
+		problem.setTitle("Access Denied");
+		problem.setProperty("timestamp", Instant.now());
+		return problem;
+	}
+
+	/**
+	 * Handles Invalid reservation State exceptions. If reservation status is not
+	 * PENDING this exception is thrown.
+	 * 
+	 * @param ex InvalidReservationStateException
+	 * @return 409 CONFLICT problem detail response
+	 */
+	@ExceptionHandler(InvalidReservationStateException.class)
+	public ProblemDetail handleInvalidReservationsState(InvalidReservationStateException ex) {
+
+		log.warn("Invalid reservation state: {}", ex.getMessage());
+
+		ProblemDetail problem = ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT, ex.getMessage());
+		problem.setTitle("Invalid reservation state");
+		problem.setProperty("timestamp", Instant.now());
 		return problem;
 	}
 
