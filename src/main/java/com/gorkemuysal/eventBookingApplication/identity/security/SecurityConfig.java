@@ -36,19 +36,20 @@ public class SecurityConfig {
 		this.entryPoint = entryPoint;
 	}
 
-	
 	/**
 	 * configures the Spring Security filter chain
 	 * 
 	 * @param http the HttpSecurity to configure
 	 * @return the configured SecurityFilterChain
 	 * @throws Exception if an error occurs during configuration
-	 * */
+	 */
 	@Bean
 	SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 		return http.csrf(csrf -> csrf.disable())
 				.sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-				.authorizeHttpRequests(auth -> auth.requestMatchers("/api/v1/auth/**").permitAll()
+				.authorizeHttpRequests(auth -> auth
+						.requestMatchers("/api/v1/auth/login", "/api/v1/auth/register", "/api/v1/auth/refresh-token")
+						.permitAll().requestMatchers("/api/v1/auth/**").authenticated()
 						.requestMatchers("/actuator/health/**").permitAll()
 						.requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
 						.anyRequest().authenticated())
@@ -62,9 +63,9 @@ public class SecurityConfig {
 		return PasswordEncoderFactories.createDelegatingPasswordEncoder();
 	}
 
-	
 	/**
-	 * Configures DaoAuthenticationProvider with custom UserDetailsService and PasswordEncoder.
+	 * Configures DaoAuthenticationProvider with custom UserDetailsService and
+	 * PasswordEncoder.
 	 */
 	@Bean
 	DaoAuthenticationProvider authenticationProvider(UserDetailsService userDetailsService,
