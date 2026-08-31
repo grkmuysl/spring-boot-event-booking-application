@@ -276,6 +276,24 @@ public class GlobalExceptionHandler {
 		problem.setProperty("timestamp", Instant.now());
 		return problem;
 	}
+	
+	/**
+	 * Handles Refresh Token Exceptions like invalid token, revoked token etc
+	 * 
+	 * @param ex RefreshTokenException
+	 * @return 401 UNAUTHORIZED problem detail response
+	 * */
+	@ExceptionHandler(RefreshTokenException.class)
+	public ProblemDetail handleRefreshToken(RefreshTokenException ex) {
+		log.warn("Refresh token error: {}" , ex.getMessage());
+		
+		ProblemDetail problem = ProblemDetail.forStatusAndDetail(HttpStatus.UNAUTHORIZED, ex.getMessage());
+		problem.setTitle("Refresh Token error");
+		problem.setProperty("timestamp" , Instant.now());
+		
+		return problem;
+		
+	}
 
 	/**
 	 * handles any exception not caught by a more specific handler above Logged at
