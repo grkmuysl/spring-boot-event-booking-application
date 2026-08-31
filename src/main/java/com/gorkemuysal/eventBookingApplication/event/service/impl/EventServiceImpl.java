@@ -1,8 +1,13 @@
 package com.gorkemuysal.eventBookingApplication.event.service.impl;
+import static com.gorkemuysal.eventBookingApplication.config.CacheConfig.EVENTS_CACHE;
+import static com.gorkemuysal.eventBookingApplication.config.CacheConfig.ALL_EVENTS_CACHE;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -43,10 +48,13 @@ public class EventServiceImpl implements EventService {
 	/**
 	 * Handle creating new Event
 	 * 
+	 * The CacheEvict annotaions is used in data situations that are no longer valid
+	 * 
 	 * @param A Request as a Dto object and creatorId as a Long
 	 * @return A Dto object as a EventDto instance
 	 * */
 	@Override
+	@CacheEvict(value = ALL_EVENTS_CACHE, allEntries = true)
 	public EventResponse create(@Valid EventRequest request) {
 		
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -69,11 +77,14 @@ public class EventServiceImpl implements EventService {
 	/**
 	 * Find Event with their names. If event not found throw an exception
 	 * 
+	 * The Cacheable annotaion is used in read operations.
+	 * 
 	 * @param Event id as a Long
 	 * @return A dto object which maps by eventMapper
 	 * @throws An custom Exception when Event not found with entered id.
 	 * */
 	@Override
+	@Cacheable(value = EVENTS_CACHE, key = "#id")
 	public EventResponse getById(Long id) {
 	
 		Event event = eventRepository.findById(id).orElseThrow(() -> new EventNotFoundException(id));
@@ -85,11 +96,15 @@ public class EventServiceImpl implements EventService {
 	/**
 	 * Handle update events. Throws error when event not found with entered id.
 	 * 
+	 * The CachePut annotaions is used in update oprations
+	 * 
 	 * @param A Dto object name is request and Event id as a Long
 	 * @return A dto object which maps by eventMapper
 	 * @throws An custom Exception when Event not found with entered id.
 	 * */
 	@Override
+	@CachePut(value = EVENTS_CACHE, key = "#id")
+    @CacheEvict(value = ALL_EVENTS_CACHE, allEntries = true)
 	public EventResponse update(@Valid EventRequest request, Long id) {
 
 		Event event = eventRepository.findById(id).orElseThrow(() -> new EventNotFoundException(id));
@@ -109,6 +124,7 @@ public class EventServiceImpl implements EventService {
 	 * @return an array list of all events
 	 * */
 	@Override
+	 @Cacheable(value = ALL_EVENTS_CACHE)
 	public List<EventResponse> getAllEvents() {
 
 		List<Event> allEvent = eventRepository.findAll();
@@ -131,6 +147,8 @@ public class EventServiceImpl implements EventService {
 	 * @throws AccessDeniedException and EventNotFoundException if event is not found
 	 * */
 	@Override
+	 @CachePut(value = EVENTS_CACHE, key = "#id")
+    @CacheEvict(value = ALL_EVENTS_CACHE, allEntries = true)
 	public EventResponse publish(Long id) {
 		
 		Event event = eventRepository.findById(id).orElseThrow(() -> new EventNotFoundException(id));
@@ -160,6 +178,8 @@ public class EventServiceImpl implements EventService {
 	 * @throws AccessDeniedException and EventNotFoundException if event is not found
 	 * */
 	@Override
+    @CachePut(value = EVENTS_CACHE, key = "#id")
+    @CacheEvict(value = ALL_EVENTS_CACHE, allEntries = true)
 	public EventResponse cancel(Long id) {
 		
 		Event event = eventRepository.findById(id).orElseThrow(() -> new EventNotFoundException(id));
