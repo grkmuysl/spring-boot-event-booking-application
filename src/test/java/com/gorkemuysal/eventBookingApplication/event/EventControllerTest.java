@@ -1,5 +1,5 @@
 package com.gorkemuysal.eventBookingApplication.event;
 
-public class EventMapper {
+public class EventControllerTest {
 
 }
