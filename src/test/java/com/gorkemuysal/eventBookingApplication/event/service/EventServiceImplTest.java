@@ -23,6 +23,7 @@ import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
+import com.gorkemuysal.eventBookingApplication.common.exception.EventNotFoundException;
 import com.gorkemuysal.eventBookingApplication.event.Event;
 import com.gorkemuysal.eventBookingApplication.event.EventRepository;
 import com.gorkemuysal.eventBookingApplication.event.EventStatus;
@@ -108,6 +109,44 @@ public class EventServiceImplTest {
 
 		verify(eventRepository, never()).save(any());
 		verify(eventMapper, never()).toEntity(any());
+	}
+	
+	@Test
+	void getById_shouldReturnEventResponse_whenEventExists() {
+	    // given
+	    Long eventId = 1L;
+	    Event event = new Event();
+	    event.setId(eventId);
+
+	    when(eventRepository.findById(eventId)).thenReturn(Optional.of(event));
+
+	    EventResponse expectedResponse = new EventResponse(
+	            eventId, "test title", "test descripton",
+	            "test vanue", LocalDateTime.now(),
+	            100, BigDecimal.valueOf(250), EventStatus.DRAFT,
+	            "gorkem@test.com"
+	    );
+	    when(eventMapper.toResponse(event)).thenReturn(expectedResponse);
+
+	    // when
+	    EventResponse result = eventService.getById(eventId);
+
+	    // then
+	    assertEquals(expectedResponse, result);
+	    verify(eventRepository).findById(eventId);
+	}
+	
+	@Test
+	void getById_shouldThrowException_whenEventNotFound() {
+	    // given
+	    Long eventId = 99L;
+	    when(eventRepository.findById(eventId)).thenReturn(Optional.empty());
+
+	    // when + then
+	    assertThrows(EventNotFoundException.class,
+	            () -> eventService.getById(eventId));
+
+	    verify(eventMapper, never()).toResponse(any(Event.class));
 	}
 
 }
